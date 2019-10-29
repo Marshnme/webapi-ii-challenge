@@ -3,7 +3,7 @@ const  db = require("./data/db");
 
 
 
-
+//MVP --------------------------
 //GET req
 
 router.get("/", (req,res) => {
@@ -17,7 +17,7 @@ router.get("/", (req,res) => {
     })
 })
 
-
+//MVP --------------------------
 //GET by ID
 router.get("/:id", (req,res) => {
     const id = req.params.id;
@@ -26,7 +26,7 @@ router.get("/:id", (req,res) => {
     
         db.findById(id)
     .then(postId => {
-        if(postId === []){
+        if(postId !== id){
             res.status(404).json({error:"The post with the specified ID does not exist."})
         }
         res.status(200).json(postId)
@@ -44,7 +44,7 @@ router.get("/:id/comments", (req,res) => {
     
         db.findPostComments(id)
     .then(posts => {
-        if(!posts){
+        if(posts !== id){
             res.status(404).json({error:"The user with the specified ID does not exist."})
         }
         res.status(200).json(posts)
