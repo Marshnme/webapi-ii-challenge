@@ -22,32 +22,51 @@ router.get("/", (req,res) => {
 router.get("/:id", (req,res) => {
     const id = req.params.id;
 
-
+// if(find){
+//                 res.status(200).json(find)
+//             }
     
         db.findById(id)
-    .then(postId => {
-        if(postId !== id){
-            res.status(404).json({error:"The post with the specified ID does not exist."})
-        }
-        res.status(200).json(postId)
-    })
-    .catch(err => {
-        console.log("error", err)
-        res.status(500).json({error:"The post information could not be retrieved."})
-    })
+        .then(post => {
+            const postId = post.map(item => item.id)
+            console.log(postId)
+            console.log(id)
+            console.log(post)
+            if(postId == id){
+                res.status(200).json(post)
+            }else{
+                res.status(404).json({error:"The post with the specified ID does not exist."})
+                
+            }
+            
+        })
+        .catch(err => {
+            console.log("error", err)
+            res.status(500).json({error:"The post information could not be retrieved."})
+        })
+        
+    
 })
 
 router.get("/:id/comments", (req,res) => {
     const id = req.params.id;
+    console.log("request--",req.posts)
 
-    
+    // let postId = db.findById(id)
     
         db.findPostComments(id)
     .then(posts => {
-        if(posts !== id){
+        console.log("posts",posts)
+        const postsId = posts.find(item=>item.post_id);
+        console.log("postId",postsId.post_id)
+        console.log("id",id)
+        if(postsId.post_id == id){
+            res.status(200).json(posts)
+        }else{
             res.status(404).json({error:"The user with the specified ID does not exist."})
         }
-        res.status(200).json(posts)
+        
+        
     })
     .catch(err => {
         console.log("error", err)
@@ -115,18 +134,22 @@ router.put("/:id", (req,res) => {
     ?res 
     .status(400).json({error:"Please provide title and contents for the post."})
 
-
+//find by ID include in res-----------------------------------
     :db.update(oldUser,req.body)
     .then( count => {
-        if(!count){
+        db.findById(req.params.id)
+        .then(user =>{
+            if(!count){
             res.status(404).json({error:"The post with the specified ID does not exist."})
         }
-        res.status(200).json(count)
+        res.status(200).json(user)
     })
     .catch(err => {
         console.log("error", err)
         res.status(500).json({error:"The post information could not be modified."})
     })
+        })
+        
 })
 
 //MVP-----------------------------------------
